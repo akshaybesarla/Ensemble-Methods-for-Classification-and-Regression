@@ -19,11 +19,7 @@
 
 > *MSc Data Science and Analytics · Royal Holloway, University of London · September 2024*
 
-<br/>
 
-![Ensemble Architecture](assets/figures/fig5_architecture_diagram.png)
-
-<br/>
 
 **[Overview](#-overview)** &nbsp;·&nbsp; **[Key Features](#-key-features)** &nbsp;·&nbsp; **[Files](#-files-included)** &nbsp;·&nbsp; **[Decision Trees](#-decision-trees-the-base-learner)** &nbsp;·&nbsp; **[Ensemble Methods](#-ensemble-methods)** &nbsp;·&nbsp; **[Results](#-results--visualisations)** &nbsp;·&nbsp; **[Installation](#-installation)**
 
