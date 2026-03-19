@@ -1,0 +1,6 @@
+model,task,dataset,train_accuracy,test_accuracy,precision,recall,f1_score,best_params
+Logistic Regression,classification,Iris,baseline,baseline,baseline,baseline,baseline,baseline
+Decision Tree,classification,Iris,0.9900,0.9600,0.9500,0.9500,0.9500,"{""max_depth"": 6}"
+Bagging Classifier,classification,Iris,0.9200,0.9600,0.9600,0.9600,0.9600,"{""n_estimators"": 30}"
+Random Forest Classifier,classification,Iris,0.9900,1.0000,1.0000,1.0000,1.0000,"{""n_estimators"": 10, ""max_features"": 2}"
+Gradient Boosting Classifier,classification,Iris,0.6600,0.6700,0.6500,0.6600,0.6500,"{""n_estimators"": 30, ""learning_rate"": 0.01, ""max_depth"": 7}"

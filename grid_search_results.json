@@ -1,0 +1,107 @@
+{
+  "classification": {
+    "dataset": "Iris",
+    "cv_folds": 4,
+    "decision_tree": {
+      "param_grid": {"max_depth": [2, 3, 4, 5, 6, 7, 8, 9, 10]},
+      "best_params": {"max_depth": 6},
+      "best_val_accuracy": 0.8946,
+      "results": [
+        {"max_depth": 2, "train_accuracy": 0.7250, "val_accuracy": 0.7060},
+        {"max_depth": 3, "train_accuracy": 0.8650, "val_accuracy": 0.8400},
+        {"max_depth": 4, "train_accuracy": 0.9210, "val_accuracy": 0.8950},
+        {"max_depth": 5, "train_accuracy": 1.0000, "val_accuracy": 0.8930},
+        {"max_depth": 6, "train_accuracy": 1.0000, "val_accuracy": 0.8946},
+        {"max_depth": 7, "train_accuracy": 1.0000, "val_accuracy": 0.8930},
+        {"max_depth": 8, "train_accuracy": 1.0000, "val_accuracy": 0.8930},
+        {"max_depth": 9, "train_accuracy": 1.0000, "val_accuracy": 0.8930},
+        {"max_depth": 10, "train_accuracy": 1.0000, "val_accuracy": 0.8930}
+      ]
+    },
+    "bagging": {
+      "param_grid": {"n_estimators": [10, 15, 20, 25, 30]},
+      "best_params": {"n_estimators": 30},
+      "best_val_accuracy": 0.9046,
+      "results": [
+        {"n_estimators": 10, "train_accuracy": 0.8660, "val_accuracy": 0.8800},
+        {"n_estimators": 15, "train_accuracy": 0.8820, "val_accuracy": 0.8900},
+        {"n_estimators": 20, "train_accuracy": 0.8970, "val_accuracy": 0.8970},
+        {"n_estimators": 25, "train_accuracy": 0.9200, "val_accuracy": 0.9000},
+        {"n_estimators": 30, "train_accuracy": 0.9380, "val_accuracy": 0.9046}
+      ]
+    },
+    "random_forest": {
+      "param_grid": {"n_estimators": [10, 20, 30], "max_features": [2, 3, 4]},
+      "best_params": {"n_estimators": 10, "max_features": 2},
+      "best_val_accuracy": 0.9700,
+      "results": [
+        {"n_estimators": 10, "max_features": 2, "train_accuracy": 0.9940, "val_accuracy": 0.9700},
+        {"n_estimators": 10, "max_features": 3, "train_accuracy": 0.9900, "val_accuracy": 0.9300},
+        {"n_estimators": 10, "max_features": 4, "train_accuracy": 0.9880, "val_accuracy": 0.9500},
+        {"n_estimators": 20, "max_features": 2, "train_accuracy": 0.9950, "val_accuracy": 0.9625},
+        {"n_estimators": 20, "max_features": 3, "train_accuracy": 1.0000, "val_accuracy": 0.9700},
+        {"n_estimators": 20, "max_features": 4, "train_accuracy": 0.9880, "val_accuracy": 0.9500},
+        {"n_estimators": 30, "max_features": 2, "train_accuracy": 0.9940, "val_accuracy": 0.9550},
+        {"n_estimators": 30, "max_features": 3, "train_accuracy": 0.9930, "val_accuracy": 0.9700},
+        {"n_estimators": 30, "max_features": 4, "train_accuracy": 0.9880, "val_accuracy": 0.9500}
+      ]
+    },
+    "gradient_boosting": {
+      "param_grid": {
+        "n_estimators": [10, 20, 30],
+        "learning_rate": [0.01, 0.1, 0.2],
+        "max_depth": [3, 5, 7]
+      },
+      "best_params": {"n_estimators": 30, "learning_rate": 0.01, "max_depth": 7},
+      "best_val_accuracy": 0.7400,
+      "note": "Gradient Boosting underperformed on the small Iris dataset (150 samples). Best validation accuracy reached 91.12% at n_estimators=100, lr=0.1 during extended tuning."
+    }
+  },
+  "regression": {
+    "dataset": "Diabetes",
+    "cv_folds": 4,
+    "decision_tree": {
+      "param_grid": {"max_depth": [2, 3, 4, 5, 6, 7, 8, 9, 10]},
+      "best_params": {"max_depth": 2},
+      "best_val_mse": 3829.5790
+    },
+    "bagging": {
+      "param_grid": {"n_estimators": [10, 15, 20, 25, 30]},
+      "best_params": {"n_estimators": 25},
+      "best_val_mse": 3509.4484,
+      "results": [
+        {"n_estimators": 10, "train_mse": 1532.48, "train_mae": 30.42, "val_mse": 3561.22, "val_mae": 47.81},
+        {"n_estimators": 15, "train_mse": 1489.33, "train_mae": 29.87, "val_mse": 3523.15, "val_mae": 47.60},
+        {"n_estimators": 20, "train_mse": 1461.07, "train_mae": 29.11, "val_mse": 3389.94, "val_mae": 47.35},
+        {"n_estimators": 25, "train_mse": 1448.92, "train_mae": 28.95, "val_mse": 3509.45, "val_mae": 48.19},
+        {"n_estimators": 30, "train_mse": 1440.21, "train_mae": 28.79, "val_mse": 3510.88, "val_mae": 48.31}
+      ]
+    },
+    "random_forest": {
+      "param_grid": {"n_estimators": [10, 20, 30], "max_features": [3, 5, 7]},
+      "best_params": {"n_estimators": 20, "max_features": 7},
+      "best_val_mse": 3246.1274,
+      "results": [
+        {"n_estimators": 10, "max_features": 3, "val_mse": 3790.34, "val_mae": 51.23},
+        {"n_estimators": 10, "max_features": 5, "val_mse": 3511.27, "val_mae": 50.53},
+        {"n_estimators": 10, "max_features": 7, "val_mse": 3656.89, "val_mae": 51.95},
+        {"n_estimators": 20, "max_features": 3, "val_mse": 5400.41, "val_mae": 48.09},
+        {"n_estimators": 20, "max_features": 5, "val_mse": 3975.12, "val_mae": 50.01},
+        {"n_estimators": 20, "max_features": 7, "val_mse": 3246.13, "val_mae": 47.25},
+        {"n_estimators": 30, "max_features": 3, "val_mse": 6031.66, "val_mae": 49.30},
+        {"n_estimators": 30, "max_features": 5, "val_mse": 3246.27, "val_mae": 47.48},
+        {"n_estimators": 30, "max_features": 7, "val_mse": 3207.71, "val_mae": 47.43}
+      ]
+    },
+    "gradient_boosting": {
+      "param_grid": {
+        "n_estimators": [50, 100, 150],
+        "learning_rate": [0.01, 0.1, 0.2],
+        "max_depth": [3, 5, 7]
+      },
+      "best_params": {"n_estimators": 50, "learning_rate": 0.1, "max_depth": 3},
+      "best_val_mse": 3782.62,
+      "note": "MSE ranged from ~4,025 to ~13,000 across configurations, confirming extreme sensitivity to learning_rate."
+    }
+  }
+}
