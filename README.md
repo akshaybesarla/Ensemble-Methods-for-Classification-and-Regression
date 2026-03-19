@@ -17,8 +17,9 @@
 
 <br/>
 
-> *MSc Data Science and Analytics · Royal Holloway, University of London · September 2024*
+> *MSc Data Science and Analytics · Royal Holloway, University of London *
 
+<br/>
 
 
 **[Overview](#-overview)** &nbsp;·&nbsp; **[Key Features](#-key-features)** &nbsp;·&nbsp; **[Files](#-files-included)** &nbsp;·&nbsp; **[Decision Trees](#-decision-trees-the-base-learner)** &nbsp;·&nbsp; **[Ensemble Methods](#-ensemble-methods)** &nbsp;·&nbsp; **[Results](#-results--visualisations)** &nbsp;·&nbsp; **[Installation](#-installation)**
@@ -63,10 +64,15 @@ Baseline comparisons against **logistic regression** (classification) and **line
 | `Ensemble_Methods_Classification.ipynb` | Jupyter Notebook | Decision Tree, Bagging, Random Forest, Gradient Boosting Classifiers on the Iris dataset. Includes Grid Search, K-Fold CV, accuracy plots, and learning curves. |
 | `Ensemble_Methods_Regression.ipynb` | Jupyter Notebook | Decision Tree, Bagging, Random Forest, Gradient Boosting Regressors on the Diabetes dataset. Includes Grid Search heatmaps, MSE/MAE plots, RMSE/R² evaluation, and learning curves. |
 | `Ensemble_Methods_Report.pdf` | PDF | Full 12,607-word MSc academic report covering background research, methodology, comparative analysis, results, limitations, and recommendations. |
-| `src/models/` | Python modules | Modular implementations of all classifiers and regressors |
-| `src/preprocessing/` | Python modules | Feature engineering and data splitting utilities |
-| `src/evaluation/` | Python modules | Metrics, cross-validation, and Grid Search functions |
-| `assets/figures/` | PNG | All visualisation figures used in this README |
+| `fig1_classification_dashboard.png` | PNG | Train/test accuracy, Precision/Recall/F1, and Bagging estimator curve — classification |
+| `fig2_regression_dashboard.png` | PNG | MSE, MAE, RMSE, R² comparison across all regression models |
+| `fig3_learning_curves.png` | PNG | Learning curves — train vs. validation performance across training sizes |
+| `fig4_gridsearch_heatmaps.png` | PNG | Grid Search heatmaps — Random Forest and Gradient Boosting |
+| `fig5_architecture_diagram.png` | PNG | Ensemble architecture — Bagging, Random Forest, Gradient Boosting side by side |
+| `fig6_decision_tree_depth.png` | PNG | Decision Tree depth vs. performance — bias-variance trade-off |
+| `fig7_feature_importance.png` | PNG | Random Forest feature importance — Iris and Diabetes datasets |
+| `src/models/` | Python | Modular implementations of all classifiers and regressors |
+| `src/evaluation/` | Python | Metrics, cross-validation, and Grid Search functions |
 | `results/` | CSV / JSON | Model outputs and metric summaries |
 | `requirements.txt` | Text | All dependencies with pinned versions |
 
@@ -106,17 +112,11 @@ A Decision Tree recursively partitions the feature space by selecting the featur
 
 ### Decision Tree Classifier — Gini Impurity
 
-The classifier uses **Gini Impurity** to select the best split at each node. The goal is to find the feature and threshold that minimises the weighted Gini impurity of the resulting child nodes.
+The classifier uses **Gini Impurity** to select the best split at each node.
 
-**Gini Impurity at a node:**
+**Gini Impurity:** &nbsp; `G(t) = 1 − Σ pᵢ²`
 
-$$G(t) = 1 - \sum_{i=1}^{C} p_i^2$$
-
-where $p_i$ is the proportion of samples belonging to class $i$ in node $t$, and $C$ is the number of classes.
-
-**Weighted Gini for split selection:**
-
-$$\text{Gini}_{\text{split}} = \frac{|t_L|}{|t|} \cdot G(t_L) + \frac{|t_R|}{|t|} \cdot G(t_R)$$
+**Weighted Gini for split selection:** &nbsp; `Gini_split = (|t_L|/|t|)·G(t_L) + (|t_R|/|t|)·G(t_R)`
 
 ```python
 def _best_split(self, X, y):
@@ -138,31 +138,22 @@ def _best_split(self, X, y):
     return best_feature, best_threshold
 ```
 
-**Leaf node prediction:** Majority class in the leaf.  
-**Stopping criteria:** All samples share one class · `max_depth` reached · no valid split exists.
-
 ### Decision Tree Regressor — Variance Reduction
 
-The regressor uses **Mean Squared Error** and **variance reduction** to select the best split. The objective is to minimise the total weighted variance across child nodes.
+The regressor uses **MSE and variance reduction** to select the best split.
 
-**MSE at a node:**
+**MSE at a node:** &nbsp; `MSE(t) = (1/nₜ) Σ(yᵢ − ȳ)²`
 
-$$\text{MSE}(t) = \frac{1}{n_t} \sum_{i=1}^{n_t} (y_i - \bar{y})^2$$
-
-**Variance reduction (splitting criterion):**
-
-$$\Delta \text{Var} = \text{Var}(t) - \left( \frac{n_L}{n_t} \cdot \text{Var}(t_L) + \frac{n_R}{n_t} \cdot \text{Var}(t_R) \right)$$
+**Variance reduction:** &nbsp; `ΔVar = Var(t) − (n_L/nₜ · Var(t_L) + n_R/nₜ · Var(t_R))`
 
 ```python
 def _build_tree(self, X, y, depth=0):
-    best_mse   = float('inf')
-    best_split = None
+    best_mse, best_split = float('inf'), None
 
     for feature_index in range(X.shape[1]):
         for threshold in np.unique(X[:, feature_index]):
             left_mask  = X[:, feature_index] <= threshold
-            right_mask = ~left_mask
-            left_y, right_y = y[left_mask], y[right_mask]
+            left_y, right_y = y[left_mask], y[~left_mask]
 
             if len(left_y) == 0 or len(right_y) == 0:
                 continue
@@ -171,15 +162,12 @@ def _build_tree(self, X, y, depth=0):
             mse = len(left_y) * np.var(left_y) + len(right_y) * np.var(right_y)
 
             if mse < best_mse:
-                best_mse   = mse
-                best_split = (feature_index, threshold)
+                best_mse, best_split = mse, (feature_index, threshold)
 ```
-
-**Leaf node prediction:** Mean of target values in the leaf.
 
 ### Decision Tree — Depth vs. Performance
 
-![Decision Tree Depth vs Performance](assets/figures/fig6_decision_tree_depth.png)
+<img src="./fig6_decision_tree_depth.png" alt="Decision Tree Depth vs Performance" width="100%"/>
 
 > *Fig 1 — Decision Tree depth vs. accuracy (Iris) and MSE (Diabetes). The diverging train/validation curves beyond the optimal depth make the bias–variance trade-off directly visible. Overfitting begins at `max_depth ≥ 5` for classification and beyond `max_depth=2` for regression.*
 
@@ -207,20 +195,13 @@ These are precisely the weaknesses that **Bagging**, **Random Forests**, and **G
 
 ## Ensemble Methods
 
-![Ensemble Architecture Diagram](assets/figures/fig5_architecture_diagram.png)
+<img src="./fig5_architecture_diagram.png" alt="Ensemble Architecture Diagram" width="100%"/>
 
 > *Fig 2 — How each ensemble method combines Decision Trees. Bagging and Random Forest build trees independently in parallel. Gradient Boosting builds sequentially — each new tree corrects the residual errors of all previous trees.*
 
 ### Bagging (Bootstrap Aggregating)
 
 Bagging reduces variance by training multiple Decision Trees independently on bootstrap samples of the training data, then aggregating their predictions.
-
-**Algorithm:**
-1. Draw $B$ bootstrap samples $D_b$ (random sampling with replacement) from the training set
-2. Train a Decision Tree $f_b(x)$ on each $D_b$
-3. Aggregate predictions:
-   - **Classification:** $\hat{y} = \text{Mode}\{f_b(x) : b = 1, \ldots, B\}$
-   - **Regression:** $\hat{y} = \frac{1}{B} \sum_{b=1}^{B} f_b(x)$
 
 ```python
 class BaggingClassifier:
@@ -242,11 +223,7 @@ class BaggingClassifier:
 
 ### Random Forest
 
-Random Forest extends Bagging by introducing an additional layer of randomness: at each node split, only a **random subset of features** is considered. This decorrelates the trees, making the ensemble more diverse and robust.
-
-**Key difference from Bagging:** Standard Bagging considers all features at every split. Random Forest restricts to $k$ randomly chosen features:
-- Classification: $k = \sqrt{p}$
-- Regression: $k = p / 3$
+Random Forest extends Bagging by introducing an additional layer of randomness: at each node split, only a **random subset of features** is considered (`k = √p` for classification, `k = p/3` for regression). This decorrelates the trees.
 
 ```python
 class RandomForestClassifier:
@@ -260,21 +237,13 @@ class RandomForestClassifier:
             self.trees.append((tree, features))
 ```
 
-**What Random Forest corrects:** Both variance and inter-tree correlation. When trees are correlated (use similar features), averaging them yields less benefit. Random feature selection breaks this correlation.
+**What Random Forest corrects:** Both variance and inter-tree correlation. Random feature selection breaks correlation between trees, making the ensemble more robust.
 
 ---
 
 ### Gradient Boosting
 
 Unlike Bagging and Random Forest — which build trees in parallel — Gradient Boosting builds trees **sequentially**. Each new tree is trained to correct the **residual errors** of all previous trees.
-
-**Algorithm:**
-1. Initialise: $F_0(x) = \arg\min_\gamma \sum L(y_i, \gamma)$
-2. For $m = 1$ to $M$:
-   - Compute residuals: $r_{im} = -\frac{\partial L(y_i, F_{m-1}(x_i))}{\partial F(x_i)}$
-   - Fit a new tree $h_m(x)$ to the residuals
-   - Update: $F_m(x) = F_{m-1}(x) + \lambda \cdot h_m(x)$
-3. Final model: $F_M(x) = F_0(x) + \sum_{m=1}^{M} \lambda \cdot h_m(x)$
 
 ```python
 class GradientBoostingRegressor:
@@ -290,7 +259,7 @@ class GradientBoostingRegressor:
         return sum(self.learning_rate * m.predict(X) for m in self.models)
 ```
 
-**What Gradient Boosting corrects:** Bias. Each tree focuses on the mistakes the ensemble is currently making. The learning rate $\lambda$ controls how aggressively each correction is applied.
+**What Gradient Boosting corrects:** Bias. Each tree focuses on the mistakes the ensemble is currently making. The learning rate `λ` controls how aggressively each correction is applied.
 
 ---
 
@@ -344,9 +313,9 @@ Grid Search with K-Fold Cross-Validation (k=4) was applied to all models. Full p
 | **Random Forest** ⭐ | **0.99** | **1.00** | **1.00** | **1.00** | **1.00** | `n_estimators=10, max_features=2` |
 | Gradient Boosting | 0.66 | 0.67 | 0.65 | 0.66 | 0.65 | `n_estimators=30, lr=0.01, max_depth=7` |
 
-![Classification Results Dashboard](assets/figures/fig1_classification_dashboard.png)
+<img src="./fig1_classification_dashboard.png" alt="Classification Results Dashboard" width="100%"/>
 
-> *Fig 3 — Left: Train vs Test accuracy per model. Centre: Precision, Recall and F1 breakdown across all models. Right: Bagging validation accuracy as n_estimators increases — performance plateaus at 30 trees, confirming ensemble diversity saturates.*
+> *Fig 3 — Left: Train vs Test accuracy per model. Centre: Precision, Recall and F1 breakdown across all models. Right: Bagging validation accuracy as n_estimators increases — plateaus at 30 trees confirming diversity saturation.*
 
 ---
 
@@ -360,25 +329,25 @@ Grid Search with K-Fold Cross-Validation (k=4) was applied to all models. Full p
 | Random Forest | 3246.13 | 47.25 | 56.97 | 0.38 | `n_estimators=20, max_features=7` |
 | Gradient Boosting | 3523.42 | 48.02 | 59.36 | 0.33 | `n_estimators=50, lr=0.1, max_depth=3` |
 
-![Regression Results Dashboard](assets/figures/fig2_regression_dashboard.png)
+<img src="./fig2_regression_dashboard.png" alt="Regression Results Dashboard" width="100%"/>
 
-> *Fig 4 — Four-metric comparison: MSE, MAE, RMSE, and R² across all regressors. Bagging leads on all four metrics. The Decision Tree R² of −3.97 confirms a single shallow tree performs worse than a simple mean predictor.*
+> *Fig 4 — Four-metric comparison: MSE, MAE, RMSE, and R² across all regressors. Bagging leads on all four metrics. Decision Tree R² of −3.97 confirms a single shallow tree performs worse than a simple mean predictor.*
 
 ---
 
 ### Grid Search Heatmaps
 
-![Grid Search Heatmaps](assets/figures/fig4_gridsearch_heatmaps.png)
+<img src="./fig4_gridsearch_heatmaps.png" alt="Grid Search Heatmaps" width="100%"/>
 
-> *Fig 5 — Validation MSE heatmaps from Grid Search. Left: Random Forest — optimal at `n_estimators=20, max_features=7`. Right: Gradient Boosting — extreme sensitivity to `learning_rate`, with validation MSE ranging from ~4,000 to ~13,000 across configurations. This directly illustrates why Gradient Boosting requires careful tuning.*
+> *Fig 5 — Validation MSE heatmaps from Grid Search. Left: Random Forest — optimal at `n_estimators=20, max_features=7`. Right: Gradient Boosting — extreme sensitivity to `learning_rate`, with validation MSE ranging from ~4,000 to ~13,000 across configurations.*
 
 ---
 
 ### Learning Curves
 
-![Learning Curves](assets/figures/fig3_learning_curves.png)
+<img src="./fig3_learning_curves.png" alt="Learning Curves" width="100%"/>
 
-> *Fig 6 — Learning curves for all models on both tasks. Solid lines = validation performance, dashed lines = training performance. The large train–validation gap for the Decision Tree confirms high variance. Random Forest converges most consistently as training size increases.*
+> *Fig 6 — Learning curves for all models on both tasks. Solid lines = validation performance, dashed lines = training performance. The large train–validation gap for the Decision Tree confirms high variance. Random Forest converges most consistently.*
 
 **Classification — Key observations:**
 
@@ -402,9 +371,9 @@ Grid Search with K-Fold Cross-Validation (k=4) was applied to all models. Full p
 
 ### Feature Importance — Random Forest
 
-![Feature Importance](assets/figures/fig7_feature_importance.png)
+<img src="./fig7_feature_importance.png" alt="Feature Importance" width="100%"/>
 
-> *Fig 7 — Gini-based feature importance from the best Random Forest configuration. Left: Petal Length and Petal Width dominate Iris classification — consistent with the known discriminatory power of petal measurements across species. Right: BMI and S5 (serum triglycerides) are the strongest predictors of diabetes progression.*
+> *Fig 7 — Gini-based feature importance from the best Random Forest configuration. Left: Petal Length and Width dominate Iris classification. Right: BMI and S5 (serum triglycerides) are the strongest predictors of diabetes progression.*
 
 ---
 
@@ -424,19 +393,19 @@ Grid Search with K-Fold Cross-Validation (k=4) was applied to all models. Full p
 
 ### Classification — Iris Dataset
 
-- **Random Forest achieved 100% test accuracy** — the only model to classify all test samples correctly. Random feature subset selection at each split decorrelates trees, producing an ensemble diverse enough to perfectly capture the Iris decision boundaries.
-- **Bagging matched Decision Tree accuracy (96%)** while achieving a more balanced precision–recall profile, demonstrating effective variance reduction without introducing new bias.
-- **Gradient Boosting underperformed significantly** (67% test accuracy), confirming that the sequential boosting approach is highly sensitive to dataset size. The small Iris dataset (150 samples) is insufficient for Gradient Boosting to leverage its error-correction strategy effectively.
-- **Bagging validation accuracy peaked at 30 estimators** — the performance plateau beyond this point confirms that ensemble diversity saturates and additional trees yield diminishing returns.
-- **Decision Tree overfitting confirmed at `max_depth ≥ 5`** — training accuracy reached 100% while validation accuracy plateaued at 89.5%, a textbook overfit signal.
+- **Random Forest achieved 100% test accuracy** — random feature subset selection decorrelates trees, producing an ensemble diverse enough to perfectly capture the Iris decision boundaries.
+- **Bagging matched Decision Tree accuracy (96%)** with a more balanced precision–recall profile, demonstrating effective variance reduction without introducing new bias.
+- **Gradient Boosting underperformed significantly** (67%) — the small Iris dataset (150 samples) is insufficient for sequential boosting to leverage its error-correction strategy effectively.
+- **Bagging validation accuracy peaked at 30 estimators** — the performance plateau confirms ensemble diversity saturates and additional trees yield diminishing returns.
+- **Decision Tree overfitting confirmed at `max_depth ≥ 5`** — training accuracy reached 100% while validation plateaued at 89.5%, a textbook overfit signal.
 
 ### Regression — Diabetes Dataset
 
-- **Bagging delivered the best regression performance** (MSE = 2651, R² = 0.50) — a 31% reduction in MSE over the Decision Tree baseline. Averaging 25 bootstrap-trained trees effectively smoothed the high-variance predictions of individual trees.
-- **Random Forest (MSE = 3246) trailed Bagging** despite its stronger classification performance. The Diabetes dataset's 10-feature space may be too narrow for random feature selection to deliver meaningful decorrelation benefit.
-- **Gradient Boosting required far more data and tuning** — with 442 samples and a moderate hyperparameter grid, sequential learners could not converge to a competitive solution. Results would likely improve substantially with early stopping and larger datasets.
-- **The Decision Tree R² of −3.97** confirms predictions worse than a simple mean predictor at `max_depth=2` — a single shallow tree is wholly inadequate for this regression task.
-- **Grid Search reduced Gradient Boosting validation MSE by ~70%** (from ~13,000 at poor settings to ~4,025 at optimal), underscoring the model's extreme sensitivity to hyperparameter configuration.
+- **Bagging delivered the best regression performance** (MSE = 2651, R² = 0.50) — a 31% reduction in MSE over the Decision Tree baseline. Averaging 25 bootstrap-trained trees smoothed the high-variance individual predictions.
+- **Random Forest (MSE = 3246) trailed Bagging** despite its stronger classification performance. The 10-feature space may be too narrow for random feature selection to deliver meaningful decorrelation benefit.
+- **Gradient Boosting required far more data and tuning** — with 442 samples, sequential learners could not converge to a competitive solution without early stopping.
+- **The Decision Tree R² of −3.97** confirms predictions worse than a simple mean predictor at `max_depth=2`.
+- **Grid Search reduced Gradient Boosting validation MSE by ~70%** (from ~13,000 to ~4,025), underscoring extreme hyperparameter sensitivity.
 
 ---
 
@@ -466,7 +435,7 @@ scikit-learn>=1.0.0
 jupyter>=1.0.0
 ```
 
-> **Note:** scikit-learn is used exclusively for `load_iris`, `load_diabetes`, `train_test_split`, `KFold`, and evaluation metrics. Every classifier and regressor — Decision Tree, Bagging, Random Forest, Gradient Boosting — is implemented in NumPy from first principles.
+> **Note:** scikit-learn is used exclusively for `load_iris`, `load_diabetes`, `train_test_split`, `KFold`, and evaluation metrics. Every classifier and regressor is implemented in NumPy from first principles.
 
 ---
 
@@ -480,39 +449,29 @@ jupyter notebook Ensemble_Methods_Classification.ipynb
 jupyter notebook Ensemble_Methods_Regression.ipynb
 ```
 
-**Each notebook produces:**
-
-| Output | Classification | Regression |
-|---|---|---|
-| Hyperparameter line charts | Accuracy vs. `max_depth` / `n_estimators` | MSE & MAE vs. parameter values |
-| Grid Search heatmaps | RF: `n_estimators` × `max_features` | RF & GB: multi-parameter heatmaps (train + val) |
-| Learning curves | Train vs. val accuracy across training sizes | Train vs. val MSE across training sizes |
-| Final comparison plots | Accuracy, Precision, Recall, F1 — all models | MAE, MSE, RMSE, R² bar charts — all models |
-
 ---
 
 ## Future Improvements
 
 | Improvement | Rationale |
 |---|---|
-| **XGBoost / LightGBM / CatBoost benchmarks** | Compare bespoke implementation against state-of-the-art optimised libraries |
-| **SHAP feature importance analysis** | Explain which features drive predictions in each ensemble model |
-| **Early stopping for Gradient Boosting** | Prevent overfitting without requiring exhaustive Grid Search |
-| **Stacking / blending meta-ensemble** | Combine all four model outputs via a meta-learner for further accuracy gains |
-| **Larger, real-world datasets** | Validate findings beyond UCI benchmark datasets (financial, medical, NLP) |
-| **MLflow experiment tracking** | Automate logging of all runs, metrics, and artefacts for full reproducibility |
-| **Streamlit / FastAPI deployment** | Serve the best-performing model as an interactive web application |
-| **Parallelisation** | Implement multiprocessing for Bagging and Random Forest tree training |
+| **XGBoost / LightGBM / CatBoost benchmarks** | Compare against state-of-the-art optimised libraries |
+| **SHAP feature importance analysis** | Explain which features drive predictions in each model |
+| **Early stopping for Gradient Boosting** | Prevent overfitting without exhaustive Grid Search |
+| **Stacking / blending meta-ensemble** | Combine all model outputs via a meta-learner |
+| **MLflow experiment tracking** | Automate logging of all runs, metrics, and artefacts |
+| **Streamlit / FastAPI deployment** | Serve the best model as an interactive web application |
+| **Parallelisation** | Implement multiprocessing for Bagging and Random Forest |
 
 ---
 
 ## Acknowledgements
 
-- **Leo Breiman** — for the foundational work on Bagging (1996) and Random Forests (2001) that underpins this study
-- **Jerome H. Friedman** — for the development of Gradient Boosting Machines (2001)
-- **The scikit-learn team** — for open access to the Iris and Diabetes benchmark datasets and evaluation utilities
-- **UCI Machine Learning Repository** — for maintaining accessible benchmark datasets for the research community
-- **Royal Holloway, University of London** — for academic resources and institutional support throughout the MSc programme
+- **Leo Breiman** — foundational work on Bagging (1996) and Random Forests (2001) that underpins this study
+- **Jerome H. Friedman** — development of Gradient Boosting Machines (2001)
+- **The scikit-learn team** — open access to the Iris and Diabetes benchmark datasets and evaluation utilities
+- **UCI Machine Learning Repository** — maintaining accessible benchmark datasets for the research community
+- **Royal Holloway, University of London** — academic resources and institutional support throughout the MSc programme
 
 ---
 
@@ -521,11 +480,9 @@ jupyter notebook Ensemble_Methods_Regression.ipynb
 - Breiman, L. (1996). Bagging predictors. *Machine Learning*, 24(2), 123–140.
 - Breiman, L. (2001). Random forests. *Machine Learning*, 45(1), 5–32.
 - Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. *Annals of Statistics*, 29(5), 1189–1232.
-- Freund, Y., & Schapire, R. E. (1997). A decision-theoretic generalisation of online learning and an application to boosting. *Journal of Computer and System Sciences*, 55(1), 119–139.
+- Freund, Y., & Schapire, R. E. (1997). A decision-theoretic generalisation of online learning and an application to boosting. *JCSS*, 55(1), 119–139.
 - Hastie, T., Tibshirani, R., & Friedman, J. (2009). *The Elements of Statistical Learning* (2nd ed.). Springer.
 - Quinlan, J. R. (1986). Induction of decision trees. *Machine Learning*, 1(1), 81–106.
-- Dietterich, T. G. (2000). Ensemble methods in machine learning. *Multiple Classifier Systems*, 1–15. Springer.
-- Zhou, Z. H. (2012). *Ensemble Methods: Foundations and Algorithms*. CRC Press.
 - Scikit-learn Documentation (2023). Ensemble methods. https://scikit-learn.org/stable/modules/ensemble.html
 
 ---
@@ -535,7 +492,7 @@ jupyter notebook Ensemble_Methods_Regression.ipynb
 **Candidate Number: 2406856**  
 MSc Data Science and Analytics  
 Department of Computer Science · Royal Holloway, University of London  
-Egham, Surrey TW20 0EX, UK · 
+Egham, Surrey TW20 0EX, UK · *Submitted September 2024*
 
 ---
 
