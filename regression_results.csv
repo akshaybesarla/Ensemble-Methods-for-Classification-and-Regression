@@ -1,6 +1,0 @@
-model,task,dataset,test_mse,test_mae,rmse,r2_score,best_params
-Linear Regression,regression,Diabetes,baseline,baseline,baseline,baseline,baseline
-Decision Tree Regressor,regression,Diabetes,3829.5790,50.2300,61.8836,-3.9741,"{""max_depth"": 2}"
-Bagging Regressor,regression,Diabetes,2651.0329,41.8244,51.4882,0.4996,"{""n_estimators"": 25}"
-Random Forest Regressor,regression,Diabetes,3246.1274,47.2479,56.9747,0.3800,"{""n_estimators"": 20, ""max_features"": 7}"
-Gradient Boosting Regressor,regression,Diabetes,3523.4233,48.0202,59.3585,0.3300,"{""n_estimators"": 50, ""learning_rate"": 0.1, ""max_depth"": 3}"
