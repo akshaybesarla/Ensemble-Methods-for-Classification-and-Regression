@@ -71,10 +71,7 @@ Baseline comparisons against **logistic regression** (classification) and **line
 | `fig5_architecture_diagram.png` | PNG | Ensemble architecture — Bagging, Random Forest, Gradient Boosting side by side |
 | `fig6_decision_tree_depth.png` | PNG | Decision Tree depth vs. performance — bias-variance trade-off |
 | `fig7_feature_importance.png` | PNG | Random Forest feature importance — Iris and Diabetes datasets |
-| `src/models/` | Python | Modular implementations of all classifiers and regressors |
-| `src/evaluation/` | Python | Metrics, cross-validation, and Grid Search functions |
-| `results/` | CSV / JSON | Model outputs and metric summaries |
-| `requirements.txt` | Text | All dependencies with pinned versions |
+
 
 ---
 
