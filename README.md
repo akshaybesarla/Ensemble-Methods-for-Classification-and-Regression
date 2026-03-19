@@ -535,7 +535,7 @@ jupyter notebook Ensemble_Methods_Regression.ipynb
 **Candidate Number: 2406856**  
 MSc Data Science and Analytics  
 Department of Computer Science · Royal Holloway, University of London  
-Egham, Surrey TW20 0EX, UK · *Submitted September 2024*
+Egham, Surrey TW20 0EX, UK · 
 
 ---
 
