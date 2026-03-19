@@ -486,7 +486,7 @@ jupyter notebook Ensemble_Methods_Regression.ipynb
 
 ## Author
 
-**Candidate Number: 2406856**  
+**Akshay Kumar Besarla**  
 MSc Data Science and Analytics  
 Department of Computer Science · Royal Holloway, University of London  
 Egham, Surrey TW20 0EX, UK · *Submitted September 2024*
