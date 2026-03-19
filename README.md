@@ -17,13 +17,6 @@
 
 <br/>
 
-> *MSc Data Science and Analytics · Royal Holloway, University of London · September 2024*
-
-<br/>
-
-<img src="./fig5_architecture_diagram.png" alt="Ensemble Architecture Diagram" width="100%"/>
-
-<br/>
 
 **[Overview](#-overview)** &nbsp;·&nbsp; **[Key Features](#-key-features)** &nbsp;·&nbsp; **[Files](#-files-included)** &nbsp;·&nbsp; **[Decision Trees](#-decision-trees-the-base-learner)** &nbsp;·&nbsp; **[Ensemble Methods](#-ensemble-methods)** &nbsp;·&nbsp; **[Results](#-results--visualisations)** &nbsp;·&nbsp; **[Installation](#-installation)**
 
@@ -492,7 +485,7 @@ jupyter notebook Ensemble_Methods_Regression.ipynb
 
 ## Author
 
-**Candidate Number: 2406856**  
+**Akshay Kumar Besarla**  
 MSc Data Science and Analytics  
 Department of Computer Science · Royal Holloway, University of London  
 Egham, Surrey TW20 0EX, UK · *Submitted September 2024*
